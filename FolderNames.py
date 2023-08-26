@@ -9,7 +9,7 @@ def get_folder_names(directory):
     return folder_names
 
 def create_anime_list():
-    directory = input("Enter the directory path in Windows format: ")
+    directory = input("Enter the directory path: ")
     if os.path.exists(directory):
         folder_names = get_folder_names(directory)
         if folder_names:
