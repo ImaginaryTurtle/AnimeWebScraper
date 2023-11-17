@@ -5,7 +5,8 @@ def get_folder_names(directory):
     for item in os.listdir(directory):
         item_path = os.path.join(directory, item)
         if os.path.isdir(item_path):
-            folder_names.append(item)
+            if item[0] != '$':
+                folder_names.append({'name':item, 'url':None, 'rating':None, 'genres':None, 'synopsis':None, 'episodes':None})
     return folder_names
 
 def create_anime_list():
@@ -13,7 +14,6 @@ def create_anime_list():
     if os.path.exists(directory):
         folder_names = get_folder_names(directory)
         if folder_names:
-            folder_names.pop(0)
             return folder_names
         else:
             print("No folders found in the directory.")
