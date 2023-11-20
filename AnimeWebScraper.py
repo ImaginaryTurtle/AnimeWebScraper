@@ -5,9 +5,9 @@ import Scraper
 
 if __name__ == "__main__":
     animeDict = FolderNames.create_anime_list()
-    if animeDict:
+    #if animeDict:
         #Do Stuff
-        print(animeDict)
-    #Scraper.get_urls()
+    #    print(animeDict)
+    Scraper.get_urls(animeDict)
     #else:
     #    exit()
