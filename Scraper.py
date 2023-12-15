@@ -1,9 +1,9 @@
-#from http.client import responses
+from ast import Try
 import requests
 from bs4 import BeautifulSoup
+import fnmatch
 
 def get_urls(animeDict):
-#def get_urls():
     s = requests.session()
 
     postAddress = "https://www.animeftw.tv/index.php"
@@ -18,8 +18,7 @@ def get_urls(animeDict):
 
     URLs = []
     
-    
-    #TODO: find animeDict[x]['Name'] on page, update animeDict[x]['URL']
+
     links = html.find_all("a")
     for link in links:
         try:
@@ -28,34 +27,50 @@ def get_urls(animeDict):
         except:
             continue
         for anime in animeDict:
-            if ''.join(filter(str.isalpha, anime["name"])).lower() == ''.join(filter(str.isalpha, link.text)).lower():
+            if ''.join(filter(str.isalnum, anime["name"])).lower() == ''.join(filter(str.isalnum, link.text)).lower():
                 anime["url"] = link["href"]
 
     
-    
-    #TESTING SECTION ------------------------------------------------------------------
-    missingAnimes = []
     for anime in animeDict:
-        if anime["url"] in URLs:
-            URLs.remove(anime["url"])
-        if anime["url"] == None:
-            missingAnimes.append(anime["name"])
+        if anime["url"]:
+            animePage = s.get("https://www.animeftw.tv" + anime["url"])
+            animeHtml = BeautifulSoup(animePage.content, "html.parser")
 
+            animeImgs = animeHtml.find_all("img")
+            animeGenres = animeHtml.find_all("a")
+            animeSynopsis = animeHtml.find_all("div")
 
-    print("Full List:")
-    for anime in animeDict:
-        print(anime["name"], anime["url"])
-    print("\n\n\n\n\nMissing Animes:")
-    for anime in missingAnimes:
-        print(anime)
-    print("\n\n\n\n\nMissing URLs:")
-    for url in URLs:
-        print(url)
-    
+            for a in animeGenres:
+                try:
+                    if fnmatch.fnmatch(a["href"], "/anime/sort/?*"):
+                        anime["genres"].append(a["href"][12:])
+                except:
+                    continue
+            
+            try:
+                for a in animeImgs:
+                    if "https://animeftw.tv/images/seriesimages/" in a["src"]:
+                        anime["img"] = a["src"]
+                    if "https://animeftw.tv/images/ratings/" in a["src"]:
+                        anime["rating"] = a["src"][35:38]
+            except:
+                continue
 
-    #TODO: Correct bug -> A Certain Magical Index        /anime/a-certain-magical-index2/
-    #                     A Certain Magical Index 2      /anime/a-certain-magical-index2/
+            synopsisFound = False
 
+            for a in animeSynopsis:
+                if "Series Synopsis:" == a.text:
+                    synopsisFound = True
+                    continue
+                if synopsisFound:
+                    anime["synopsis"] = a.text
+                    break
 
-    #TODO: Use urls to get pages for each item, then update remaining information 
-    #{'name':string, 'url':string, 'rating':string, 'genres':list[string], 'synopsis':string, 'episodes':list[string]}
+            episodesFound = False
+            for a in animeSynopsis:
+                if "Episodes:" == a.text or "Movies:" == a.text:
+                    episodesFound = True
+                    continue
+                if episodesFound:
+                    anime["episodes"]=list(filter(None, a.text.replace("\t","").split("\n")))
+                    break

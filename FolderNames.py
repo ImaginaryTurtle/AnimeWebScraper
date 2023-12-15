@@ -6,7 +6,7 @@ def get_folder_names(directory):
         item_path = os.path.join(directory, item)
         if os.path.isdir(item_path):
             if item[0] != '$':
-                folder_names.append({'name':item, 'url':None, 'rating':None, 'genres':None, 'synopsis':None, 'episodes':None})
+                folder_names.append({'name':item, 'url':None, 'img':None, 'rating':None, 'genres':[], 'synopsis':None, 'episodes':None})
     return folder_names
 
 def create_anime_list():
