@@ -9,8 +9,7 @@ def get_folder_names(directory):
                 folder_names.append({'name':item, 'url':None, 'img':None, 'rating':None, 'genres':[], 'synopsis':None, 'episodes':None})
     return folder_names
 
-def create_anime_list():
-    directory = input("Enter the directory path: ")
+def create_anime_list(directory):
     if os.path.exists(directory):
         folder_names = get_folder_names(directory)
         if folder_names:

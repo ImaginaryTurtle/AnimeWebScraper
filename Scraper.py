@@ -74,3 +74,4 @@ def get_urls(animeDict):
                 if episodesFound:
                     anime["episodes"]=list(filter(None, a.text.replace("\t","").split("\n")))
                     break
+    return animeDict
