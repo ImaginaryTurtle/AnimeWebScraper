@@ -1,13 +1,18 @@
 import os
 import requests
+import shutil
 
 def exporter(animeDict, directory):
     for anime in animeDict:
         if not os.path.exists(directory + "/" + anime['name'] + "/info"):
             os.mkdir(directory + "/" + anime['name'] + "/info")
+        else:
+            shutil.rmtree(directory + "/" + anime['name'] + "/info")
+            os.mkdir(directory + "/" + anime['name'] + "/info")
+
         filepath = directory + "/" + anime['name'] + "/info/"
 
-        info = open(filepath + "info.txt", "w")
+        info = open(filepath + "info.txt", "w", encoding="utf-8")
 
         info.writelines("Name:")
         info.writelines("\n" + anime['name'])
@@ -33,7 +38,10 @@ def exporter(animeDict, directory):
             info.writelines("\nNone")
 
         info.writelines("\nSynopsis:")
-        info.writelines("\n" + (anime['synopsis'] or "None"))
+        try:
+            info.writelines("\n" + (anime['synopsis'] or "None"))
+        except:
+            info.writelines("Error")
 
         info.writelines("\nEpisodes:")
         try:
